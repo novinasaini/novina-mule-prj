@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd 
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="e4f62b94-6b85-4b54-b29a-a36f46bf9318" file="local.properties" />
+	<file:config name="File_Config" doc:name="File Config" doc:id="b7fac1e4-1316-42bc-89b0-b40d3f706705" >
+	</file:config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="0c45745f-eb67-41d7-86fa-ffb2aa6b271c" >
+	  <salesforce:basic-connection username="${sf.confiq.userName}" password="${sf.confiq.password}" securityToken="${sf.confiq.securityToken}" />
+	</salesforce:sfdc-config>
+	<db:config name="can_Database_Config1" doc:name="Database Config" doc:id="4f24d912-7056-4803-ba41-1d35ee9d969d" >
+		<db:my-sql-connection host="${mysql.can.db.host}" port="${mysql.can.db.port}" user="${mysql.can.db.user}" password="${mysql.can.db.password}" database="${mysql.can.db.name}" />
+	</db:config>
+	
+</mule>

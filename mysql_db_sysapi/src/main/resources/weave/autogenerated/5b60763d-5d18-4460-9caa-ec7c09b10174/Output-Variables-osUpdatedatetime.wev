@@ -1,0 +1,5 @@
+%dw 2.0
+
+type auto_5b60763d_5d18_4460_9caa_ec7c09b10174_Output_Variables_osUpdatedatetime = {|  |} {"typeAlias": "Serializable",
+"typeId": "java.io.Serializable"}
+

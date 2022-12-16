@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="71f9ff57-3273-4a30-98df-b11d356957a1" >
+		<email:smtp-connection host="${email.config.host}" user="${email.config.user}" password="novina_1" connectionTimeout="30" readTimeout="30" writeTimeout="30">
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+			
+	</email:smtp-connection>
+	
+	
+	</email:smtp-config>
+	
+	
+	<email:smtp-config name="Email_SMTP2" from="${email.config.user}">
+    <email:smtps-connection host="smtp.gmail.com"
+      port="465" password="novina_1"
+      user="${email.config.user}">
+        <tls:context enabledProtocols="TLSv1.2">
+            <tls:trust-store insecure="true"/>
+        </tls:context>
+      </email:smtps-connection>
+</email:smtp-config>
+
+
+
+	<flow name="items_sync_sf_flow" doc:id="485e22c7-9dbc-4ecc-ae4a-10881aec343b">
+		<scheduler doc:name="Scheduler" doc:id="2ba58bf4-9bfe-41da-877a-c0993226aa06" >
+		<scheduling-strategy >
+				<fixed-frequency timeUnit="MINUTES" frequency="${mysql.items.scheduler.frequency}"/>
+		</scheduling-strategy>
+		</scheduler>
+		 <logger level="INFO" doc:name="start" doc:id="66b03b45-906f-4820-811e-2072285b9377" message="Items Sync Process Scheduler started"/>
+		<os:retrieve doc:name="Retrieve datetime" doc:id="dfd4e04b-96fd-44e9-b891-22e98cb541e0" key="osUpdatedatetime" target="osUpdatedatetime"> 
+			<os:default-value ><![CDATA[2000-01-01 00:00:00]]></os:default-value>
+		</os:retrieve>
+		<logger level="INFO" doc:name="os-date" doc:id="4f986dfd-1be2-4636-b960-b34cc9209664" message='#["retrieved updated_datetime" ++ vars.osUpdatedatetime]' />
+		<flow-ref doc:name="select_items_from_db" doc:id="13faceea-1d8f-4423-af2e-d4c0c04bfb4a" name="select_items_from_db" />
+		<logger level="INFO" doc:name="after-db" doc:id="e9a96af2-c12c-47c7-9c79-8754688f377b" message='#[sizeOf(payload) ++ " items obtained from the database"]'/>
+		<flow-ref doc:name="upsert_sf_product" doc:id="5a2b9024-63d4-44a4-8f24-9843e827ad2c" name="upsert_batch_sysapi"/>
+		<os:store doc:name="Store datetime" doc:id="ee751beb-8be1-4a2e-99f8-f23b7d157d55" key="osUpdatedatetime">
+			<os:value ><![CDATA[#[now() as String{format:"yyyy-MM-dd HH:mm:ss"}]]]></os:value>
+		</os:store>
+		<logger level="INFO" doc:name="end" doc:id="5a6d786e-a6f3-4ffe-be6c-36d8f2905355" message="Items Sync Process Scheduler completed"/>
+	</flow>
+	<sub-flow name="select_items_from_db" doc:id="5b60763d-5d18-4460-9caa-ec7c09b10174">
+		<db:select doc:name="Select" doc:id="ad53982d-b45e-4be1-bded-28eccc89465a" config-ref="can_Database_Config1">
+			<db:sql><![CDATA[SELECT * from item_master WHERE updated_datetime >= :uu]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	uu: vars.osUpdatedatetime
+}]]]></db:input-parameters>
+		</db:select>
+	</sub-flow>
+	<sub-flow name="upsert_sf_product" doc:id="be5d8130-f2d8-4943-9ede-27181a4894ae">
+		<foreach doc:name="For Each" doc:id="fcd721b1-6acd-4ac3-be42-e21e62c6faf9">
+			<ee:transform doc:name="to_sf_product" doc:id="b4ad08f2-c332-43f1-a520-7a05c655f546">
+			<ee:message>
+			</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="sfRqObj"><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	ProductCode: payload.item_id as String,
+	Name: payload.item_name,
+	Description: payload.item_type,
+	(Id:payload.sf_id) if (payload.sf_id != null)
+}]]]></ee:set-variable>
+				</ee:variables>
+		</ee:transform>
+			<salesforce:upsert objectType="Product2" externalIdFieldName="Id" doc:name="Upsert_product" doc:id="6ee5da2b-60bb-4fe0-b648-7be475feeb35" config-ref="Salesforce_Config" target="sfRspObj">
+				<salesforce:records><![CDATA[#[vars.sfRqObj]]]></salesforce:records>
+			</salesforce:upsert>
+			<db:update doc:name="Update_sf_id" doc:id="21785486-8e43-4260-a5b8-d0db3f17a413" config-ref="can_Database_Config1">
+				<db:sql><![CDATA[update item_master set sf_id = :sffff_id where item_id = :item_id]]></db:sql>
+				<db:input-parameters><![CDATA[#[{
+	sffff_id : vars.sfRspObj.items[0].payload.id,
+	item_id: payload.item_id as String
+}]]]></db:input-parameters>
+			</db:update>
+		</foreach>
+		<logger level="INFO" doc:name="Logger" doc:id="8f0c607d-c920-4847-ac43-f0aaa6d89399" message='"message updated"' />
+	</sub-flow>
+	<flow name="upsert_batch_sysapi" doc:id="33c9f05e-2ee9-4e40-b8ca-25d07309e5ba" >
+		<batch:job jobName="items_sync_sf_flowBatch_Job" doc:id="cad9d174-09da-4a5f-a035-dd6f97e38e9e" blockSize="2">
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="c3ac7ed1-fd6d-4a0c-abbe-7438e0ed5957" >
+					<ee:transform doc:name="Transform Message" doc:id="92e3059e-b0f0-469d-8b54-3f413ff58401" >
+						<ee:message >
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="sfRqObj" ><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	ProductCode: payload.item_id as String,
+	Name: payload.item_name,
+	Description: payload.item_type,
+	QuantityUnitOfMeasure: payload.quantity,
+	(Id: payload.sf_id) if (payload.sf_id != null)
+}]
+]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<salesforce:upsert doc:name="Upsert" doc:id="1acadaa0-990f-4707-8751-6fe93db9b2e6" config-ref="Salesforce_Config" objectType="Product2" externalIdFieldName="Id" target="sfRspObj">
+						<salesforce:records><![CDATA[#[vars.sfRqObj]]]></salesforce:records>
+					</salesforce:upsert>
+					<db:update doc:name="Update" doc:id="7371865b-495b-41f5-9d4e-3e9d01ff2ba1" config-ref="can_Database_Config1">
+						<db:sql><![CDATA[update item_master set sf_id = :sffff_id where item_id = :item_id]]></db:sql>
+						<db:input-parameters><![CDATA[#[{
+	sffff_id : vars.sfRspObj.items[0].payload.id,
+	item_id: payload.item_id as String
+}]]]></db:input-parameters>
+					</db:update>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete>
+			
+			 <logger level="INFO" doc:name="send report" doc:id="4129b883-df1a-4ebd-8b5f-d43ee87af3e4" message="batch job completed"/>
+				<ee:transform doc:name="Transform Message" doc:id="6cb0f9bf-35f3-49c6-9c6f-c65879a5e60d" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<email:send doc:name="Send" doc:id="1d1b498a-e427-48c2-bd11-700f7916973a" config-ref="Email_SMTP" fromAddress="novbalvosee@gmail.com" subject="mail from anypointstudio">
+					<email:to-addresses>
+						<email:to-address value="novbalvosee@gmail.com" />
+					</email:to-addresses>
+					<email:body contentType="text/html">
+						<email:content><![CDATA[hello this is an email sent via Mule API]]></email:content>
+					</email:body>
+				</email:send>
+			</batch:on-complete>
+		</batch:job>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="051c2c99-7630-4160-8a6d-c02cf6715418" >
+				<logger level="INFO" doc:name="Logger" doc:id="b6f468ef-f4e6-48c7-9155-fb90636979e8" message="Error"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	
+	
+</mule>
