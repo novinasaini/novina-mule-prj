@@ -1,0 +1,14 @@
+[
+{
+  "depatureDatetime": "2018-04-24:41:31.090Z",
+  "fromLocation": "BEN-SG",
+  "toLocation": "KLG-MY",
+  "availableSeats": 20
+},
+{
+  "depatureDatetime": "2018-04-24:41:31.090Z",
+  "fromLocation": "BEN-SG",
+  "toLocation": "KLG-MY",
+  "availableSeats": 30
+}
+] 

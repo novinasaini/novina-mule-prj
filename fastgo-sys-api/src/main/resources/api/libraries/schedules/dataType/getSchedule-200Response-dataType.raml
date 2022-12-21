@@ -1,0 +1,21 @@
+#%RAML 1.0 DataType
+type: array
+items:
+  type: object
+  properties:
+    depatureDatetime:
+      required: true
+      type: string
+      example: "2018-04-24:41:31.090Z"
+    fromLocation:
+      required: true
+      type: string
+      example: "BEN-SG"
+    toLocation:
+      required: true
+      type: string
+      example: "KLG-MY"
+    availableSeats:
+      required: true
+      type: number
+      example: 20

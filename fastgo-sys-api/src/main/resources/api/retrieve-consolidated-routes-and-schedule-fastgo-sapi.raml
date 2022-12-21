@@ -1,0 +1,77 @@
+#%RAML 1.0
+title: Retrieve-Consolidated-Routes and Schedule FastGo SAPI
+description: This raml will fetch Routes and Schedules from FastGo system
+
+types:
+  commonError: !include /libraries/common/dataTypes/commonError-dataType.raml
+  getRoutesresponse: !include /libraries/routes/dataType/getRoute-200Response-dataType.raml 
+  getScheduleresponse: !include /libraries/schedules/dataType/getSchedule-200Response-dataType.raml
+traits:
+  transactionId: !include /libraries/common/traits/headerstransactionId-traits.raml
+  depatureLocationCode: !include /libraries/common/traits/queryParams-depatureLocationCode.traits.raml
+  destinationLocationCode: !include /libraries/common/traits/queryParams-destinationLocationCode.traits.raml
+  
+/{transport type}:
+  /{transportCompany}:
+    /routes:
+      get:
+        is:
+        - transactionId
+
+
+        responses:
+          200:
+            body:
+              application/json: 
+                type: getRoutesresponse
+                
+                example: !include /libraries/routes/example/getRoute-200Response-example.json
+                
+          400:
+            body:
+              application/json:
+                type: commonError
+                example: !include /libraries/common/examples/400Response-example.json
+          
+          404:
+            body:
+              application/json:
+                type: commonError
+                example: !include /libraries/common/examples/404Response-example.json
+                
+          500:
+            body:
+              application/json:
+                type: commonError
+                example: !include /libraries/common/examples/500Response-example.json
+          
+    /schedule:
+      get:
+        is:
+          - transactionId
+          - depatureLocationCode
+          - destinationLocationCode
+        responses:
+          200:
+            body:
+              application/json: 
+                type: getScheduleresponse
+                example: !include /libraries/schedules/example/getSchedule-200Response-example.json
+                  
+          400:
+            body:
+              application/json:
+                type: commonError
+                example: !include /libraries/common/examples/400Response-example.json
+        
+          404:
+            body:
+              application/json:
+                type: commonError
+                example: !include /libraries/common/examples/404Response-example.json
+                
+          500:
+            body:
+              application/json:
+                type: commonError
+                example: !include /libraries/common/examples/500Response-example.json   
