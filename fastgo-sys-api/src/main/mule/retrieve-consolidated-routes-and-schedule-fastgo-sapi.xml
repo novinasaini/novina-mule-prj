@@ -123,7 +123,7 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="get:\(transport type)\(transportCompany)\routes:retrieve-consolidated-routes-and-schedule-fastgo-sapi-config">
+    <flow name="get:\(transportType)\(transportCompany)\routes:retrieve-consolidated-routes-and-schedule-fastgo-sapi-config">
         <ee:transform>
             <ee:variables>
                 <ee:set-variable variableName="transport type">attributes.uriParams.'transport type'</ee:set-variable>
@@ -148,7 +148,7 @@ output application/json
             </ee:message>
         </ee:transform>
     </flow>
-    <flow name="get:\(transport type)\(transportCompany)\schedule:retrieve-consolidated-routes-and-schedule-fastgo-sapi-config">
+    <flow name="get:\(transportType)\(transportCompany)\schedule:retrieve-consolidated-routes-and-schedule-fastgo-sapi-config">
         <ee:transform>
             <ee:variables>
                 <ee:set-variable variableName="transport type">attributes.uriParams.'transport type'</ee:set-variable>
