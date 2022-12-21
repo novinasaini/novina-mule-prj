@@ -1,0 +1,28 @@
+[
+  {
+    "companyName": "TravelOnTip",
+    "availableSeats": 20,
+    "depatureDatetime": "2019-04-30T16:41:41",
+    "travelRoute": {
+      "destinationLocation": {
+        "locationDesc": "Kiang Malaysia"
+      },
+      "originLocation": {
+        "locationDesc": "Beauna Vista Singapore"
+      }
+    }
+  },
+  {
+    "companyName": "FastGo",
+    "availableSeats": 30,
+    "depatureDatetime": "2019-04-30T16:41:41",
+    "travelRoute": {
+      "destinationLocation": {
+        "locationDesc": "Kiang Malaysia"
+      },
+      "originLocation": {
+        "locationDesc": "Beauna Vista Singapore"
+      }
+    }
+  }
+]
