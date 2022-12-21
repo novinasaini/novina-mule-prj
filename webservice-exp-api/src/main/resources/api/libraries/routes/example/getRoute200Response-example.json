@@ -1,0 +1,26 @@
+
+
+[
+  {
+    "companyCode": "TransNational",
+    "originLocation": {
+      "locationCode": "BEN-SG",
+      "locationDesc": "Beauna Vista Singapore"
+    },
+    "destinationLocation": {
+      "locationCode": "KLG-MY",
+      "locationDesc": "Kiang Malaysia"
+    }
+  },
+  {
+    "companyCode": "TransNational",
+    "originLocation": {
+      "locationCode": "BEN-SG",
+      "locationDesc": "Beauna Vista Singapore"
+    },
+    "destinationLocation": {
+      "locationCode": "KLG-MY",
+      "locationDesc": "Kiang Malaysia"
+    }
+  }
+]

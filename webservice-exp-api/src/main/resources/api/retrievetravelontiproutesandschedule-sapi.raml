@@ -1,0 +1,107 @@
+#%RAML 1.0
+title: RetrieveTravelOnTipRoutesAndSchedule SAPI
+description: This API will fetch Routes and Schedules from TravelOnTip System 
+
+
+types:
+  getRouteResponse: !include /libraries/routes/dataType/getRoute-200Response-dataType.raml
+  getScheduleResponse: !include /libraries/schedules/dataType/getSchedule-200Response-dataType.raml
+  commonError: !include /libraries/common/datatype/commonError-dataType.raml
+traits:
+  transactionId: !include /libraries/common/traits/header-transactionId-trait.raml
+  depatureLocationCode: !include /libraries/common/traits/queryParams-depatureLocationCode-trait.raml
+  destinationLocationCode: !include /libraries/common/traits/queryParams-destinationLocationCode-trait.raml
+ 
+
+/{transportType}:
+  /{transportCompany}:
+    /routes:
+      get:
+        is:
+          - transactionId
+        
+        responses:
+          200:
+            body:
+              application/json: 
+               type: getRouteResponse
+               example: !include /libraries/routes/example/getRoute-200Response-example.json
+   
+          400:
+            body:
+              application/json:
+                type: commonError
+                example: !include /libraries/common/examples/400Response-example.json
+          
+          404:
+            body:
+              application/json:
+                type: commonError
+                example: !include /libraries/common/examples/404Response-example.json
+                
+          500:
+            body:
+              application/json:
+                type: commonError
+                example: !include /libraries/common/examples/500Response-example.json
+
+                
+    /schedules:
+      get:
+        is:
+          - transactionId
+          - depatureLocationCode
+          - destinationLocationCode
+         
+        responses:
+          200:
+            body:
+              application/json:
+                type: getScheduleResponse
+                example: !include /libraries/schedules/example/getSchedule-200Response-example.json
+                        
+          400:
+            body:
+              application/json:
+               type: getRouteResponse
+               example: !include /libraries/routes/example/getRoute-200Response-example.json
+          404:
+            body:
+              application/json:
+                 type: commonError
+                 example: !include /libraries/common/examples/400Response-example.json
+          500:
+            body:
+              application/json:
+                type: commonError
+                example: !include /libraries/common/examples/500Response-example.json
+
+                
+
+
+
+
+                    
+               
+
+                  
+
+
+            
+      
+            
+           
+                          
+
+                 
+             
+                                        
+                      
+                     
+                    
+                 
+                        
+
+
+
+                
