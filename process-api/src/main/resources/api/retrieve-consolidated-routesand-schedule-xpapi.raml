@@ -1,0 +1,86 @@
+#%RAML 1.0
+title: Retrieve-Consolidated-Routes and Schedule BAPI
+description: This raml file retrieve consolidated routes and schedules
+
+
+types:
+  getRoute: !include /libraries/routes/dataType/getRoutes-200Response-dataType.raml
+  getSchedule: !include /libraries/schedule/dataType/getSchedule-200ResponsedataType.raml
+  commonError: !include /libraries/common/dataType/commomError-dataType.raml
+
+traits:
+  transactionId: !include /libraries/common/traits/header-transactionId-traits.raml
+  companyName: !include /libraries/common/traits/queryParams.companyname.traits.raml
+  depatureLocation: !include /libraries/common/traits/queryParams.depatureLocation.traits.raml
+  destinationLocation: !include /libraries/common/traits/queryparams.destinationLocation.traits.raml
+  requestTimezone: !include /libraries/common/traits/queryparams.requestTimezone.traits.raml
+
+/booking:
+  /{transportType}:
+    /routes:
+      get:
+        is:
+          - transactionId
+          - companyName
+          - depatureLocation
+          - destinationLocation
+          - requestTimezone
+
+        responses: 
+          200:
+            body:
+              application/json:
+                type: getRoute
+
+
+                example : !include /libraries/routes/example/getRoute200Response-example.json
+          400:
+            body:
+             application/json:
+               type: commonError
+               example: !include /libraries/common/example/400Response-example.json
+                  
+          404:
+            body:
+             application/json:
+              type: commonError
+              example: !include /libraries/common/example/404Responseexample.json
+                
+          500:
+            body:
+             application/json:
+              type: commonError
+              example: !include /libraries/common/example/500Response-example.json
+    /schedules:
+      get:
+        is:
+          - transactionId
+          - companyName
+          - depatureLocation
+          - destinationLocation
+          - requestTimezone
+        responses: 
+          200:
+            body:
+              application/json:
+                type: getSchedule
+
+
+                example : !include /libraries/schedule/example/getschedule-200-Response.json
+          400:
+            body:
+             application/json:
+               type: commonError
+               example: !include /libraries/common/example/400Response-example.json
+                  
+          404:
+            body:
+             application/json:
+              type: commonError
+              example: !include /libraries/common/example/404Responseexample.json
+                
+          500:
+            body:
+             application/json:
+              type: commonError
+              example: !include /libraries/common/example/500Response-example.json
